@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { uploadImage } from "@/lib/api";
@@ -20,6 +21,7 @@ export default function ImageUploader({
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
+  // 업로드 직후 즉시 전환되도록 프리뷰 상태 사용
   const [previewUrl, setPreviewUrl] = useState(imageUrl ?? "");
   useEffect(() => setPreviewUrl(imageUrl ?? ""), [imageUrl]);
 
@@ -37,9 +39,9 @@ export default function ImageUploader({
     const file = inputEl.files?.[0];
     if (!file) return;
 
-    const err = validate(file);
-    if (err) {
-      alert(err);
+    const errMsg = validate(file);
+    if (errMsg) {
+      alert(errMsg);
       inputEl.value = "";
       return;
     }
@@ -48,15 +50,20 @@ export default function ImageUploader({
     try {
       const url = await uploadImage(file);
       setPreviewUrl(url);
-      onUploaded(url); // 서버/캐시 업데이트는 비동기 진행
-    } catch (err: any) {
-      console.error("upload error:", err?.response?.status, err?.response?.data);
+      onUploaded(url);
+    } catch (err: unknown) {
+      console.error("upload error:", err);
       alert("업로드에 실패했어요. 잠시 후 다시 시도해 주세요.");
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
       else inputEl.value = "";
     }
+  };
+
+  const handleClear = () => {
+    setPreviewUrl("");
+    onClear();
   };
 
   return (
@@ -77,40 +84,59 @@ export default function ImageUploader({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="z-0 object-cover"
-            // unoptimized
           />
 
           <button
             type="button"
-            onClick={choose}
+            onClick={handleClear}
             disabled={busy}
-            aria-label="사진 수정"
-            className="absolute bottom-2 right-2 z-20"
+            aria-label="이미지 삭제"
+            className="absolute left-2 top-2 z-20 rounded-full bg-white/90 px-2 py-0.5 text-xs shadow ring-1 ring-[var(--color-ink,#0F172A)]"
           >
-            <ImageButton preset="photo-edit" size={36} ariaLabel="사진 수정" />
+            삭제
           </button>
+
+          <ImageButton
+            preset="photo-edit"
+            size={36}
+            onClick={choose}
+            ariaLabel="사진 수정"
+            className="absolute bottom-2 right-2 z-20"
+            disabled={busy}
+          />
         </>
       ) : (
         <>
-          <div className="z-0 flex h-full w-full items-center justify-center">
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={choose}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                choose();
+              }
+            }}
+            className="relative grid h-full w-full place-items-center"
+          >
             <Image
               src="/img/placeholder-photo.png"
               alt=""
               width={80}
               height={80}
               className="opacity-70"
+              priority={false}
             />
           </div>
 
-          <button
-            type="button"
+          <ImageButton
+            preset="photo-add"
+            size={36}
             onClick={choose}
-            disabled={busy}
-            aria-label="사진 추가"
+            ariaLabel="사진 추가"
             className="absolute bottom-2 right-2 z-20"
-          >
-            <ImageButton preset="photo-add" size={36} ariaLabel="사진 추가" />
-          </button>
+            disabled={busy}
+          />
         </>
       )}
 
