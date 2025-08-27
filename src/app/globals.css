@@ -33,8 +33,61 @@
   }
 }
 
+@layer utilities {
+  .rounded-pill {
+    border-radius: 9999px;
+  }
+
+  /* 버튼 */
+  .btn {
+    @apply rounded-pill border-2 border-[var(--color-ink)] px-4 py-2 font-semibold shadow-sm transition-opacity disabled:opacity-50;
+  }
+  .btn-outline {
+    @apply bg-white text-[var(--color-ink)];
+  }
+  .btn-success {
+    @apply bg-[var(--color-lime-300)] text-[var(--color-ink)];
+  }
+  .btn-danger {
+    @apply bg-[var(--color-rose-500)] text-white;
+  }
+
+  /* 배지 (TO DO / DONE) */
+  .badge {
+    @apply rounded-pill inline-block bg-[var(--color-lime-300)] px-3 py-1 text-xs font-bold;
+  }
+
+  /* 인풋(검색/추가) */
+  .input {
+    @apply rounded-pill h-11 w-full border-2 border-[var(--color-ink)] bg-[var(--color-slate-100)] px-4 outline-none focus:ring-2 focus:ring-[var(--color-violet-600)];
+  }
+
+  /* 카드/행 */
+  .card {
+    @apply rounded-2xl border-2 border-[var(--color-ink)] bg-white p-4;
+  }
+  .todo-row {
+    @apply rounded-pill flex items-center gap-3 border-2 border-[var(--color-ink)] bg-white px-4 py-2;
+  }
+
+  /* 체크 버튼 (왼쪽 원형) */
+  .check {
+    @apply inline-flex h-5 w-5 items-center justify-center rounded-full border-2 border-[var(--color-ink)] bg-[var(--color-slate-100)];
+  }
+  .check-checked {
+    @apply bg-[var(--color-violet-600)] text-white;
+  }
+
+  /* 메모지(상세) – 연한 노랑 바탕 + 가로줄 */
+  .memo-sheet {
+    background:
+      linear-gradient(0deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)),
+      repeating-linear-gradient(0deg, #fef3c7, #fef3c7 30px, #fde68a 31px);
+    @apply rounded-xl border border-[var(--color-amber-800)] p-3;
+  }
+}
+
 body {
-  background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
