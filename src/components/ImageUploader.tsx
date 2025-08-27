@@ -1,7 +1,6 @@
 "use client";
-
 import Image from "next/image";
-import { useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { uploadImage } from "@/lib/api";
 import ImageButton from "@/components/ui/ImageButton";
 
@@ -16,10 +15,13 @@ export default function ImageUploader({
   imageUrl,
   onUploaded,
   onClear,
-  heightClass = "h-48", // 기본 높이
+  heightClass = "h-48",
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+
+  const [previewUrl, setPreviewUrl] = useState(imageUrl ?? "");
+  useEffect(() => setPreviewUrl(imageUrl ?? ""), [imageUrl]);
 
   const choose = () => inputRef.current?.click();
 
@@ -34,16 +36,19 @@ export default function ImageUploader({
     const inputEl = e.currentTarget;
     const file = inputEl.files?.[0];
     if (!file) return;
+
     const err = validate(file);
     if (err) {
       alert(err);
       inputEl.value = "";
       return;
     }
+
     setBusy(true);
     try {
       const url = await uploadImage(file);
-      onUploaded(url);
+      setPreviewUrl(url);
+      onUploaded(url); // 서버/캐시 업데이트는 비동기 진행
     } catch (err: any) {
       console.error("upload error:", err?.response?.status, err?.response?.data);
       alert("업로드에 실패했어요. 잠시 후 다시 시도해 주세요.");
@@ -57,46 +62,56 @@ export default function ImageUploader({
   return (
     <div
       className={[
-        "relative rounded-[12px] border-2 border-dashed border-[var(--color-ink,#0F172A)]",
-        "overflow-hidden bg-[var(--color-slate-100,#F1F5F9)]",
-        heightClass, // ⬅부모와 높이 동기화
+        "relative overflow-hidden rounded-2xl",
+        "bg-[var(--color-slate-100,#F1F5F9)]",
+        heightClass,
       ].join(" ")}
     >
-      {imageUrl ? (
-        //업로드된 상태
-        <div className="relative h-full w-full">
-          <img src={imageUrl} alt="업로드된 이미지" className="h-full w-full object-cover" />
-          <ImageButton
-            preset="photo-edit"
-            size={36}
-            className="absolute bottom-2 right-2"
-            onClick={choose}
-            ariaLabel="사진 수정"
-            disabled={busy}
-          />
-        </div>
-      ) : (
-        //빈 상태
-        <button
-          type="button"
-          onClick={choose}
-          disabled={busy}
-          aria-label="사진 추가"
-          title="사진 추가"
-          className="relative block h-full w-full"
-        >
+      <div className="pointer-events-none absolute inset-0 z-10 rounded-2xl border-2 border-dashed border-[var(--color-slate-400,#94A3B8)]" />
+
+      {previewUrl ? (
+        <>
           <Image
-            src="/img/placeholder-photo.png"
-            alt=""
-            sizes="12px"
+            src={previewUrl}
+            alt="업로드된 이미지"
             fill
-            className="pointer-events-none object-contain opacity-80"
-            priority={false}
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            className="z-0 object-cover"
+            // unoptimized
           />
-          <span className="pointer-events-none absolute bottom-2 right-2">
-            <ImageButton preset="photo-add" size={36} ariaLabel="" disabled />
-          </span>
-        </button>
+
+          <button
+            type="button"
+            onClick={choose}
+            disabled={busy}
+            aria-label="사진 수정"
+            className="absolute bottom-2 right-2 z-20"
+          >
+            <ImageButton preset="photo-edit" size={36} ariaLabel="사진 수정" />
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="z-0 flex h-full w-full items-center justify-center">
+            <Image
+              src="/img/placeholder-photo.png"
+              alt=""
+              width={80}
+              height={80}
+              className="opacity-70"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={choose}
+            disabled={busy}
+            aria-label="사진 추가"
+            className="absolute bottom-2 right-2 z-20"
+          >
+            <ImageButton preset="photo-add" size={36} ariaLabel="사진 추가" />
+          </button>
+        </>
       )}
 
       <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={onChange} />
