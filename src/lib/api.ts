@@ -21,9 +21,7 @@ export const deleteItem = async (id: string) => {
 // Image upload → imageUrl 반환
 export const uploadImage = async (file: File): Promise<string> => {
   const fd = new FormData();
-  fd.append("file", file);
-  const { data } = await api.post(`/images/upload`, fd, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return data.imageUrl as string;
+  fd.append("image", file); // Swagger: 필드명은 image
+  const { data } = await api.post("/images/upload", fd); // 헤더 직접 지정 X
+  return (data?.url ?? data?.imageUrl) as string; // Swagger: { url }
 };
