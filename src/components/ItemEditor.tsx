@@ -126,6 +126,7 @@ export default function ItemEditor({ id }: { id: string }) {
       <div className="mt-1 flex justify-end gap-3">
         <ImageButton
           preset={completed ? "active" : "save"}
+          onClick={onSave}
           ariaLabel={completed ? "수정 완료 (활성)" : "수정 완료"}
         />
         <ImageButton preset="delete" onClick={onDelete} ariaLabel="삭제하기" />
