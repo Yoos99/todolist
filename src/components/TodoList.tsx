@@ -21,8 +21,8 @@ const CHECKBOX_ICON = {
 
 export default function TodoList() {
   const { data, isLoading, error } = useItems();
-  if (isLoading) return <div>불러오는 중…</div>;
-  if (error) return <div>목록을 불러오지 못했습니다.</div>;
+  if (isLoading) return <div>목록을 불러오는 중…</div>;
+  if (error) return <div>에러발생! 목록을 불러오지 못했습니다.</div>;
 
   const todo = (data ?? []).filter((i) => !i.isCompleted);
   const done = (data ?? []).filter((i) => i.isCompleted);
