@@ -47,11 +47,12 @@ export default function ItemEditor({ id }: { id: string }) {
   const completed = !!data.isCompleted;
 
   return (
-    <main className="mx-auto max-w-screen-lg space-y-5 px-4 py-3 md:px-6">
+    <main className="mx-auto w-full max-w-screen-lg space-y-5 px-3 py-3 sm:px-4 sm:py-4 md:px-6 md:py-6">
       <Header />
-      <hr className="-mx-4 my-0 my-3 w-[100vw] border-gray-300 md:-mx-6" />
+      <hr className="-mx-3 my-3 w-[100vw] border-gray-300 sm:-mx-4 md:-mx-6" />
+
       <div
-        className={`h-12 rounded-[18px] border-2 border-[var(--color-ink,#0F172A)] px-5 ${
+        className={`h-12 rounded-[18px] border-2 border-[var(--color-ink,#0F172A)] px-4 sm:px-5 ${
           completed ? "bg-[var(--color-violet-100,#EDE9FE)]" : "bg-white"
         }`}
       >
@@ -77,7 +78,7 @@ export default function ItemEditor({ id }: { id: string }) {
             onChange={(e) => setName(e.target.value)}
             placeholder="할 일 제목"
             className={[
-              "w-full bg-transparent px-0 text-center underline line-through decoration-[var(--color-ink,#0F172A)] decoration-2 underline-offset-[3px] outline-none",
+              "w-full bg-transparent px-0 text-center outline-none",
               "h-full leading-[3rem]",
               "caret-[var(--color-ink,#0F172A)]",
               completed
@@ -89,18 +90,19 @@ export default function ItemEditor({ id }: { id: string }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-[minmax(240px,360px)_1fr] items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:gap-5 md:grid-cols-[minmax(240px,360px)_1fr]">
         <ImageUploader
           imageUrl={data.imageUrl ?? ""}
           onUploaded={(url) => update.mutate({ imageUrl: url })}
           onClear={() => update.mutate({ imageUrl: null })}
-          heightClass="h-48"
+          heightClass="h-40 sm:h-48 md:h-56"
         />
+
         <div
           className={[
             "rounded-[14px] border border-[var(--color-amber-800,#92400E)] p-3",
             "flex flex-col",
-            "h-48",
+            "h-40 sm:h-48 md:h-56",
           ].join(" ")}
           style={{
             background:
@@ -111,15 +113,13 @@ export default function ItemEditor({ id }: { id: string }) {
             Memo
           </div>
 
-          <div className="flex flex-1 items-center justify-center">
-            <textarea
-              value={memo}
-              onChange={(e) => setMemo(e.target.value)}
-              placeholder="메모를 입력하세요"
-              rows={5} // 최소 5줄 높이
-              className="// 5줄 보장 (줄간격 1.5rem 기준) min-h-[140px] w-full flex-1 resize-none overflow-y-auto bg-transparent text-center leading-6 text-black outline-none"
-            />
-          </div>
+          <textarea
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            placeholder="메모를 입력하세요"
+            rows={5}
+            className="min-h-[140px] w-full flex-1 resize-none overflow-y-auto bg-transparent text-center leading-6 text-black outline-none"
+          />
         </div>
       </div>
 
