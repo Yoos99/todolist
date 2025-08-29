@@ -11,7 +11,7 @@ import Image from "next/image";
 const CHECKBOX_ICON = {
   unchecked: "/img/checkbox/unchecked.png",
   checked: "/img/checkbox/checked.png",
-};
+} as const;
 
 export default function ItemEditor({ id }: { id: string }) {
   const { data, isLoading, error } = useItem(id);
@@ -49,7 +49,7 @@ export default function ItemEditor({ id }: { id: string }) {
   return (
     <main className="mx-auto w-full max-w-screen-lg space-y-5 px-3 py-3 sm:px-4 sm:py-4 md:px-6 md:py-6">
       <Header />
-      <hr className="-mx-3 my-3 w-[100vw] border-gray-300 sm:-mx-4 md:-mx-6" />
+      <hr className="-mx-3 my-3 border-gray-300 sm:-mx-4 md:-mx-6" />
 
       <div
         className={`h-12 rounded-[18px] border-2 border-[var(--color-ink,#0F172A)] px-4 sm:px-5 ${
